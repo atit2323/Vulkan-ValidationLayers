@@ -149,11 +149,16 @@ if(WIN32)
     # Turn off transitional "changed behavior" warning message for Visual Studio versions prior to 2015. The changed behavior is
     # that constructor initializers are now fixed to clear the struct members.
     add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,19>>:/wd4351>")
+
+    # If instrumented corechecks build is specified on the command line, define it for the Windows CMake build
+    if(INSTRUMENT_CORECHECKS)
+        message("-- Building CoreChecks instrumentation features")
+        add_definitions(-DINSTRUMENT_CORECHECKS)
+    endif()
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpointer-arith -Wno-unused-function -Wno-sign-compare")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpointer-arith -Wno-unused-function -Wno-sign-compare")
 endif()
-
 
 if(ANNOTATED_SPEC_LINK)
     message("-- ANNOTATED_SPEC_LINK is ${ANNOTATED_SPEC_LINK}")
@@ -195,6 +200,7 @@ set(CORE_VALIDATION_LIBRARY_FILES
     shader_validation.cpp
     shader_validation.h
     gpu_validation.cpp
+    generated/corechecks_instrumentation.cpp
     xxhash.c)
 
 set(OBJECT_LIFETIMES_LIBRARY_FILES
